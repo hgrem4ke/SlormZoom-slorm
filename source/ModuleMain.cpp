@@ -324,6 +324,18 @@ static void OnEndStep()
         if (g_Debug)
             DbgPrintEx(LOG_SEVERITY_INFO, "[SlormZoom] max_zoom %.2f -> %.2f", current, target);
     }
+
+    // Debug: the zoom the player actually reaches (global.zm), each time it changes.
+    if (g_Debug && IsTrue(g_Yytk->CallBuiltin("variable_global_exists", { "zm" })))
+    {
+        static double lastZm = -1.0;
+        const double zm = ReadNumber(g_Yytk->CallBuiltin("variable_global_get", { "zm" }));
+        if (std::fabs(zm - lastZm) > 0.01)
+        {
+            lastZm = zm;
+            DbgPrintEx(LOG_SEVERITY_INFO, "[SlormZoom] zoom now %.2f (limit %.2f)", zm, ReadMaxZoom());
+        }
+    }
 }
 
 // Every object event goes through here: we only act after the controller's End Step.
